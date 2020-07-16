@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React   from 'react';
 
 class Prueba extends React.Component {
     constructor(props) {
@@ -8,8 +8,14 @@ class Prueba extends React.Component {
             empleados: [],
             nombre: "",
             apellido: "",
-            run: "  "
+            run: "",
+            listaempleados:[]
+            
         };
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.ChangeNombre = this.ChangeNombre.bind(this);
+        this.ChangeApellido = this.ChangeApellido.bind(this);
+        this.ChangeRun = this.ChangeRun.bind(this);
 
     }
 
@@ -28,32 +34,41 @@ class Prueba extends React.Component {
 
 
 
-    handleSubmit() {
-        alert("se envio el formaulario de "+this.state.nombre);
-        // let nombre = this.state.nombre
-        // let apellido = this.state.apellido
-        // let run = this.state.run
+    handleSubmit(event) {
+        let tokenform = this.state.tokenfinal
+        let nombre =event.target[0].value;
+        let apellido =event.target[1].value;
+        let run = event.target[2].value;
+        let formdata ={
+            "nombre" : nombre,
+            "apellido" : apellido,
+            "run":run
+        }
 
-        // console.log()
-        // function empleados(newtoken) {
-        //     let header = "JWT " + JSON.parse(newtoken).token
-        //     console.log(header)
-        //     let parametros = {
-        //         method: 'GET',
-        //         headers: {
-        //             'Authorization': header,
-        //             'Content-Type': 'application/json'
-        //         }
-        //     }
-        //     return fetch('http://18.220.217.118:8080/employee/', parametros).then(function (response) {
-        //         return response.json();
-        //     })
+    
+        function creacionusuario(fomulario,token) {
+            let header = "JWT " + JSON.parse(token).token
+            console.log(header)
 
-        // }
-        // empleados(token).then(function (empleados) {
-        //     localStorage.setItem('empleados', JSON.stringify(empleados))
+            let parametros = {
+                method: 'POST',
+                headers: {
+                    'Authorization': header,
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify(fomulario)
 
-        // })
+            }
+
+            return fetch('http://18.220.217.118:8080/employee/', parametros).then(function (response) {
+                return response.json();
+            })
+
+        }
+        creacionusuario(formdata,tokenform).then(function (empleados) {
+            localStorage.setItem('empleados', JSON.stringify(empleados))
+
+        })
     }
 
     componentDidMount() {
@@ -87,17 +102,36 @@ class Prueba extends React.Component {
                 localStorage.setItem('token', JSON.stringify(token));
             })
         }
-
-
-
         rundelfetch();
         let token = localStorage.getItem('token')
         this.setState({ tokenfinal: token })
 
-        
-        
+        function empleados(token) {
+            let header = "JWT " + JSON.parse(token).token
+            console.log(header)
+
+            let parametros = {
+                method: 'GET',
+                headers: {
+                    'Authorization': header,
+                    'Content-Type': 'application/json'
+                }
+            }
+
+            return fetch('http://18.220.217.118:8080/employee/', parametros).then(function (response) {
+                return response.json();
+            })
+
+        }
+        empleados(token).then(function (empleados) {
+            localStorage.setItem('empleados', JSON.stringify(empleados))
+        })
+        let empleadoslista =localStorage.getItem('empleados')
+        this.setState({listaempleados : empleadoslista })
+        console.log(this.state.listaempleados)
     }
     
+
 
 
 
@@ -120,7 +154,8 @@ class Prueba extends React.Component {
                      <input type="text" run={this.state.run} value={this.state.run} onChange={(run) => this.ChangeRun(run)} />
                         <br></br>
                     </label>
-                    <input type="submit" value="Submit" />
+
+                    <input type="submit"></input>
                 </form>
             </div>
 
