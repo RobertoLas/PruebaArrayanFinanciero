@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Prueba from './prueba'
+import Lista from './lista'
 
 function App() {
   
@@ -20,6 +21,7 @@ function App() {
         >
           Learn React
         </a>
+        <Lista></Lista>
       </header>
     </div>
   );

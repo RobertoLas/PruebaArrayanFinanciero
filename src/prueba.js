@@ -1,4 +1,4 @@
-import React   from 'react';
+import React from 'react';
 
 class Prueba extends React.Component {
     constructor(props) {
@@ -9,8 +9,8 @@ class Prueba extends React.Component {
             nombre: "",
             apellido: "",
             run: "",
-            listaempleados:[]
-            
+            listaempleados: []
+
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.ChangeNombre = this.ChangeNombre.bind(this);
@@ -36,17 +36,17 @@ class Prueba extends React.Component {
 
     handleSubmit(event) {
         let tokenform = this.state.tokenfinal
-        let nombre =event.target[0].value;
-        let apellido =event.target[1].value;
+        let nombre = event.target[0].value;
+        let apellido = event.target[1].value;
         let run = event.target[2].value;
-        let formdata ={
-            "nombre" : nombre,
-            "apellido" : apellido,
-            "run":run
+        let formdata = {
+            "nombre": nombre,
+            "apellido": apellido,
+            "run": run
         }
 
-    
-        function creacionusuario(fomulario,token) {
+
+        function creacionusuario(fomulario, token) {
             let header = "JWT " + JSON.parse(token).token
             console.log(header)
 
@@ -56,7 +56,7 @@ class Prueba extends React.Component {
                     'Authorization': header,
                     'Content-Type': 'application/json'
                 },
-                body:JSON.stringify(fomulario)
+                body: JSON.stringify(fomulario)
 
             }
 
@@ -65,7 +65,7 @@ class Prueba extends React.Component {
             })
 
         }
-        creacionusuario(formdata,tokenform).then(function (empleados) {
+        creacionusuario(formdata, tokenform).then(function (empleados) {
             localStorage.setItem('empleados', JSON.stringify(empleados))
 
         })
@@ -73,14 +73,12 @@ class Prueba extends React.Component {
 
     componentDidMount() {
         function rundelfetch() {
-            console.log("se ejecuto")
             let nombre = "roberto.espinoza.espinoza@gmail.com";
             let contraseña = "arrayan2020";
             let json = {
                 username: nombre,
                 password: contraseña
             }
-            console.log(JSON.stringify(json))
             var opcionesLogin = {
                 method: 'POST',
                 body: JSON.stringify(json),
@@ -106,7 +104,7 @@ class Prueba extends React.Component {
         let token = localStorage.getItem('token')
         this.setState({ tokenfinal: token })
 
-        function empleados(token) {
+        function empleadoslist(token) {
             let header = "JWT " + JSON.parse(token).token
             console.log(header)
 
@@ -117,29 +115,54 @@ class Prueba extends React.Component {
                     'Content-Type': 'application/json'
                 }
             }
+            function ingresardatos() {
+                return fetch('http://18.220.217.118:8080/employee/', parametros).then(function (response) {
+                    return response.json();
+                }).then(function (empleados) {
+                    return empleados;
+                }).catch(function (error) {
+                    console.log(error, error.messaje);
+                })
 
-            return fetch('http://18.220.217.118:8080/employee/', parametros).then(function (response) {
-                return response.json();
+            } ingresardatos().then(function (empleados) {
+                localStorage.setItem('empleados', JSON.stringify(empleados))
             })
-
         }
-        empleados(token).then(function (empleados) {
-            localStorage.setItem('empleados', JSON.stringify(empleados))
+
+        empleadoslist(token)
+        let listaempleados = localStorage.getItem('empleados')
+        listaempleados = JSON.parse(listaempleados)
+        listaempleados = listaempleados.empleados
+
+        listaempleados.map(function(empleado){
+            console.log(empleado.nombre)
+            console.log(empleado.apellido)
+            console.log(empleado.run)
         })
-        let empleadoslista =localStorage.getItem('empleados')
-        this.setState({listaempleados : empleadoslista })
-        console.log(this.state.listaempleados)
+
+        this.setState((state) => ({
+            listaempleados: listaempleados,
+        }));
+
+
     }
-    
 
 
 
 
 
     render() {
+
+
         return (
+
             <div>
                 <p> {this.state.tokenfinal}</p>
+                <ul>
+                    {this.state.listaempleados.map(function (item) {
+                        return <li >Nombre:{item.nombre} Apellido:{item.apellido}</li>
+                    })}
+                </ul>
 
                 <form onSubmit={this.handleSubmit}>
                     <label>Nombre:
